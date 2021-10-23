@@ -1,5 +1,5 @@
 {
-    "name": "parklix/api",
+    "name": "mintyloop/laravel-modular-skeleton",
     "type": "project",
     "license": "proprietary",
     "require": {
