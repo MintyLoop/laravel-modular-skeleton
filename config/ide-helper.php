@@ -103,7 +103,7 @@ return [
     | Helper files to include
     |--------------------------------------------------------------------------
     |
-    | Include helper files. By default not included, but can be toggled with the
+    | Include helper files. By default, not included, but can be toggled with the
     | -- helpers (-H) option. Extra helper files can be included.
     |
     */
@@ -267,7 +267,7 @@ return [
     | magic methods and properties.
     |
     */
-    'include_class_docblocks' => false,
+    'include_class_docblocks' => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -302,7 +302,7 @@ return [
     |
     */
     'post_migrate' => [
-        'ide-helper:models --write',
+        'ide-helper:models --write --reset',
     ],
 
 ];

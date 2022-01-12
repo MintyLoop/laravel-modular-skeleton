@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
@@ -23,12 +25,12 @@ class Handler extends ExceptionHandler
     /**
      * Render an exception into an HTTP response.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @param  \Throwable  $e
-     * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\Response
+     * @return JsonResponse|Response
      * @throws Throwable
      */
-    public function render($request, Throwable $e)
+    public function render($request, Throwable $e): JsonResponse | Response
     {
         $exceptionInstance = get_class($e);
 
@@ -72,10 +74,16 @@ class Handler extends ExceptionHandler
                 break;
         }
 
-        if (!empty($status) && !empty($message)) {
-            return $this->respondWithCustomData(['message' => $message], $status);
-        }
+        if (!empty($message) and !is_null($status)) {
 
+            return $this->respondWithError(
+                message: $message,
+                type: $exceptionInstance,
+                code: $e->getCode(),
+                exception: $e
+
+            );
+        }
         return parent::render($request, $e);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Interfaces\Http\Controllers;
 
+use App\Support\ExceptionFormat;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
@@ -33,7 +34,7 @@ trait ResponseTrait
 
     protected function getTimestampInMilliseconds(): int
     {
-        return intdiv((int)now()->format('Uu'), 1000);
+        return intdiv((int) now()->format('Uu'), 1000);
     }
 
     /**
@@ -65,5 +66,34 @@ trait ResponseTrait
         return (new $this->resourceItem($item))->additional(
             ['meta' => ['timestamp' => $this->getTimestampInMilliseconds()]]
         );
+    }
+
+    public function respondWithError(
+        string $message = 'Something Went Wrong',
+        ?string $type = 'GenericException',
+        ?string $code = 'generic-error',
+        int $status = 500,
+        ?string $transactionId = null,
+        mixed $exception = null,
+        array $headers = [],
+    ): JsonResponse {
+        $data = [
+            'message' => $message,
+            'type' => $type,
+            'code' => $code,
+            'status' => $status,
+            'transaction_id' => is_null($transactionId) ? request()->header('x-transaction-id') : $transactionId,
+        ];
+
+        $options = 0;
+
+        if (! app()->environment('production')) {
+            $data['exception'] = ExceptionFormat::toArray($exception);
+            $options = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT;
+        }
+
+        $data['meta']['timestamp'] = $this->getTimestampInMilliseconds();
+
+        return new JsonResponse(data: $data, status: $status, headers: $headers, options: $options);
     }
 }

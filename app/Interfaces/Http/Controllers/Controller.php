@@ -13,9 +13,9 @@ abstract class Controller extends BaseController
     /**
      * Get the map of resource methods to ability names.
      *
-     * @return array
+     * @return array<string, string>
      */
-    protected function resourceAbilityMap()
+    protected function resourceAbilityMap(): array
     {
         return [
             'index'   => 'viewAny',

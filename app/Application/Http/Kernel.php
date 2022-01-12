@@ -2,6 +2,7 @@
 
 namespace App\Application\Http;
 
+use App\Application\Http\Middlewares\ForceSetRequestId;
 use App\Application\Http\Middlewares\TrustHosts;
 use App\Application\Http\Middlewares\ForceAcceptJson;
 use App\Application\Http\Middlewares\SetLocale;
@@ -33,6 +34,7 @@ class Kernel extends HttpKernel
      */
     protected $middleware = [
         //TrustHosts::class,
+        ForceSetRequestId::class,
         ForceAcceptJson::class,
         TrustProxies::class,
         HandleCors::class,
